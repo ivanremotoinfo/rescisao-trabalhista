@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rescisão Trabalhista | SuporteADV</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d0d; color: #e0e0e0; padding: 24px 16px; }
+  .container { max-width: 780px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  h1 { font-size: 1.5rem; color: #008080; margin-bottom: 6px; }
+  .subtitle { font-size: 0.88rem; color: #888; line-height: 1.5; }
+  .brand { font-size: 0.78rem; margin-top: 8px; color: #555; }
+  .brand span.s { color: #8B00FF; font-weight: 700; }
+  .brand span.a { color: #008080; font-weight: 700; }
+
+  .card { background: #111; border-radius: 10px; border: 1px solid #222; border-left: 3px solid #8B00FF; padding: 20px 22px; margin-bottom: 14px; transition: border-left-color 0.2s; }
+  .card:hover { border-left-color: #008080; }
+  .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 16px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+  .field.full { grid-column: 1 / -1; }
+
+  .field label { display: block; font-size: 0.78rem; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input, .field select {
+    width: 100%; padding: 9px 11px; border: 1.5px solid #333; border-radius: 6px;
+    font-size: 0.95rem; color: #fff; background: #1a1a1a; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: #008080; box-shadow: 0 0 0 2px rgba(0,128,128,0.2); }
+  .field select option { background: #1a1a1a; }
+
+  .info-box { background: #0d1a1a; border: 1px solid #1a3a3a; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+  .info-box b { color: #008080; }
+
+  button.calcular { background: #008080; color: #fff; border: none; padding: 10px 26px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: background 0.18s; text-transform: uppercase; }
+  button.calcular:hover { background: #006666; box-shadow: 0 0 10px rgba(0,128,128,0.4); }
+
+  /* Resultado */
+  .resultado { background: #0a1a0a; border: 1px solid #1a4a1a; border-radius: 10px; padding: 20px 22px; margin-top: 14px; display: none; }
+  .resultado.visible { display: block; }
+  .resultado-titulo { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 16px; }
+
+  .res-principal { text-align: center; margin-bottom: 20px; }
+  .res-principal label { display: block; font-size: 0.72rem; color: #555; text-transform: uppercase; margin-bottom: 6px; }
+  .res-principal .v { font-size: 1.8rem; font-weight: 700; color: #00ff00; font-family: 'Courier New', monospace; }
+  .res-principal .sub { font-size: 0.82rem; color: #555; margin-top: 4px; }
+
+  /* Verbas */
+  .verbas-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .verba-item { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: #111; border-radius: 8px; border-left: 3px solid #1a1a1a; }
+  .verba-item.devida { border-left-color: #008080; }
+  .verba-item.nao-devida { opacity: 0.4; }
+  .verba-item.total { background: #0d1a0d; border-left-color: #00ff00; }
+  .verba-item .vi-info { flex: 1; }
+  .verba-item .vi-nome { font-size: 0.88rem; font-weight: 700; color: #ccc; }
+  .verba-item.nao-devida .vi-nome { color: #555; }
+  .verba-item .vi-calc { font-size: 0.72rem; color: #555; margin-top: 2px; }
+  .verba-item .vi-valor { font-size: 0.95rem; font-weight: 700; font-family: 'Courier New', monospace; color: #008080; }
+  .verba-item.total .vi-nome { color: #fff; font-size: 0.95rem; }
+  .verba-item.total .vi-valor { color: #00ff00; font-size: 1.1rem; }
+  .verba-item .vi-tag { font-size: 0.62rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 8px; }
+  .vi-tag.sim { background: #1a3a1a; color: #00ff00; }
+  .vi-tag.nao { background: #2a1a1a; color: #ff4444; }
+
+  .res-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 560px) { .res-grid { grid-template-columns: 1fr 1fr; } }
+  .res-item label { display: block; font-size: 0.68rem; color: #555; text-transform: uppercase; margin-bottom: 3px; }
+  .res-item .valor { font-size: 0.9rem; font-weight: 700; color: #ccc; font-family: 'Courier New', monospace; }
+  .res-item .valor.sec { color: #555; }
+
+  .divider { border: none; border-top: 1px solid #1a3a1a; margin: 14px 0; }
+
+  .erro { background: #1a0a0a; border: 1px solid #4a1a1a; border-radius: 8px; padding: 14px 16px; color: #ff6666; font-size: 0.88rem; margin-top: 14px; display: none; }
+  .erro.visible { display: block; }
+  .aviso { font-size: 0.72rem; color: #444; margin-top: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Rescisão Trabalhista</h1>
+    <p class="subtitle">Calcule todas as verbas rescisórias conforme o tipo de demissão. Saldo, aviso, férias, 13º, FGTS e multa.</p>
+    <p class="brand"><span class="s">suporte</span><span class="a">ADV</span>.br — Ferramentas para Advogados</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Tipo de Rescisão</div>
+    <div class="form-grid">
+      <div class="field full">
+        <label>Motivo da rescisão</label>
+        <select id="tipoRescisao" onchange="atualizarInfo()">
+          <option value="sem_justa_causa_emp">Demissão sem justa causa (pelo empregador)</option>
+          <option value="com_justa_causa">Demissão com justa causa (pelo empregador)</option>
+          <option value="pedido_demissao">Pedido de demissão (pelo empregado)</option>
+          <option value="rescisao_indireta">Rescisão indireta (falta grave do empregador)</option>
+          <option value="acordo">Acordo entre as partes (art. 484-A CLT)</option>
+          <option value="obra_certa">Término de contrato por prazo determinado / obra certa</option>
+        </select>
+      </div>
+    </div>
+    <div class="info-box" id="info-rescisao">—</div>
+
+    <div class="card-label">Dados do Empregado</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Salário mensal bruto (R$)</label>
+        <input type="number" id="salario" placeholder="Ex: 3000,00" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label>Data de admissão</label>
+        <input type="date" id="dataAdmissao">
+      </div>
+      <div class="field">
+        <label>Data de demissão</label>
+        <input type="date" id="dataDemissao">
+      </div>
+      <div class="field">
+        <label>Férias vencidas (anos em aberto)</label>
+        <select id="feriasVencidas">
+          <option value="0">Nenhum período vencido</option>
+          <option value="1">1 período vencido</option>
+          <option value="2">2 períodos vencidos</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Aviso prévio</label>
+        <select id="avisoPrevio">
+          <option value="trabalhado">Trabalhado (empregado trabalha o período)</option>
+          <option value="indenizado">Indenizado (empregador dispensa)</option>
+          <option value="dispensado">Dispensado pelo empregado (pedido demissão)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Saldo de banco de horas (horas)</label>
+        <input type="number" id="bancoHoras" placeholder="0" step="1" min="0" value="0">
+      </div>
+      <div class="field">
+        <label>Comissões/médias variáveis (R$/mês)</label>
+        <input type="number" id="medias" placeholder="0,00" step="0.01" min="0" value="0">
+      </div>
+      <div class="field">
+        <label>Saldo FGTS acumulado (R$)</label>
+        <input type="number" id="saldoFGTS" placeholder="Ex: 5000" step="0.01" min="0" value="0">
+      </div>
+    </div>
+    <button class="calcular" onclick="calcular()">CALCULAR</button>
+  </div>
+
+  <div class="erro" id="erro"></div>
+
+  <div class="resultado" id="resultado">
+    <div class="resultado-titulo" id="res-titulo">Verbas Rescisórias</div>
+
+    <div class="res-principal">
+      <label>💰 Total líquido a receber</label>
+      <div class="v" id="res-total">—</div>
+      <div class="sub" id="res-sub">—</div>
+    </div>
+
+    <div class="res-grid">
+      <div class="res-item"><label>Tempo de serviço</label><div class="valor" id="res-tempo">—</div></div>
+      <div class="res-item"><label>Salário base</label><div class="valor" id="res-salario">—</div></div>
+      <div class="res-item"><label>Aviso prévio</label><div class="valor sec" id="res-aviso">—</div></div>
+      <div class="res-item"><label>Tipo de rescisão</label><div class="valor sec" id="res-tipo">—</div></div>
+    </div>
+
+    <hr class="divider">
+    <div class="resultado-titulo">Detalhamento das Verbas</div>
+    <div class="verbas-lista" id="verbas-lista"></div>
+
+    <p class="aviso">⚠️ Cálculo baseado na CLT e legislação vigente. Valores podem variar conforme convenção coletiva, adicionais específicos (insalubridade, periculosidade, noturno) e decisões judiciais. Sempre verifique as particularidades do contrato de trabalho.</p>
+  </div>
+
+</div>
+
+<script>
+const infoRescisoes = {
+  sem_justa_causa_emp: '<b>Demissão sem justa causa:</b> Empregado recebe todas as verbas: saldo, aviso (trabalhado ou indenizado), férias + 1/3, 13º proporcional, FGTS + multa de 40% e seguro-desemprego.',
+  com_justa_causa: '<b>Demissão com justa causa:</b> Empregado perde aviso prévio, 13º proporcional, FGTS (sem multa) e seguro-desemprego. Recebe apenas saldo de salário e férias vencidas.',
+  pedido_demissao: '<b>Pedido de demissão:</b> Empregado perde aviso indenizado, FGTS + multa e seguro-desemprego. Deve cumprir aviso ou ter descontado. Recebe saldo, férias e 13º proporcional.',
+  rescisao_indireta: '<b>Rescisão indireta:</b> Equivale à demissão sem justa causa para o empregado. Recebe todas as verbas incluindo FGTS + multa 40% e seguro-desemprego.',
+  acordo: '<b>Acordo (art. 484-A CLT):</b> Metade do aviso indenizado, metade da multa do FGTS (20%), saldo, férias, 13º proporcional. Sem seguro-desemprego.',
+  obra_certa: '<b>Término de contrato:</b> Recebe saldo, férias proporcionais + 1/3, 13º proporcional, FGTS + 50% de multa. Sem aviso prévio (salvo cláusula contratual).',
+};
+
+function atualizarInfo() {
+  document.getElementById('info-rescisao').innerHTML = infoRescisoes[document.getElementById('tipoRescisao').value];
+}
+
+function fmtMoeda(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtData(d) { return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+
+function showErro(msg) {
+  document.getElementById('erro').textContent = msg;
+  document.getElementById('erro').classList.add('visible');
+  document.getElementById('resultado').classList.remove('visible');
+}
+function hideErro() { document.getElementById('erro').classList.remove('visible'); }
+
+function calcular() {
+  hideErro();
+  const salario = parseFloat(document.getElementById('salario').value);
+  if (!salario || salario <= 0) return showErro('Informe o salário mensal bruto.');
+
+  const admStr = document.getElementById('dataAdmissao').value;
+  const demStr = document.getElementById('dataDemissao').value;
+  if (!admStr || !demStr) return showErro('Informe as datas de admissão e demissão.');
+
+  const admissao = new Date(admStr+'T12:00:00');
+  const demissao = new Date(demStr+'T12:00:00');
+  if (demissao <= admissao) return showErro('A data de demissão deve ser posterior à admissão.');
+
+  const tipo = document.getElementById('tipoRescisao').value;
+  const feriasVencidas = parseInt(document.getElementById('feriasVencidas').value);
+  const avisoPrevio = document.getElementById('avisoPrevio').value;
+  const bancoHoras = parseFloat(document.getElementById('bancoHoras').value) || 0;
+  const medias = parseFloat(document.getElementById('medias').value) || 0;
+  const saldoFGTS = parseFloat(document.getElementById('saldoFGTS').value) || 0;
+
+  // Cálculo do tempo
+  const mesesTotal = (demissao.getFullYear()-admissao.getFullYear())*12 + (demissao.getMonth()-admissao.getMonth());
+  const anosCompletos = Math.floor(mesesTotal / 12);
+  const mesesProporcional = mesesTotal % 12;
+  const diasMes = demissao.getDate();
+  const diasNoMes = new Date(demissao.getFullYear(), demissao.getMonth()+1, 0).getDate();
+
+  // Salário por dia e hora
+  const salarioDia = salario / 30;
+  const salarioHora = salario / 220;
+  const salarioBase = salario + medias;
+
+  // Aviso prévio: mínimo 30 dias + 3 dias por ano (máximo 90)
+  const diasAviso = Math.min(90, 30 + anosCompletos * 3);
+  const valorAvisoIndenizado = salarioBase * (diasAviso / 30);
+
+  // Regras por tipo
+  const regras = {
+    sem_justa_causa_emp: { aviso:true, fgts:true, multaFGTS:0.4, ferias13:true, seguro:true },
+    com_justa_causa:     { aviso:false, fgts:false, multaFGTS:0, ferias13:false, seguro:false },
+    pedido_demissao:     { aviso:'trabalhado', fgts:true, multaFGTS:0, ferias13:true, seguro:false },
+    rescisao_indireta:   { aviso:true, fgts:true, multaFGTS:0.4, ferias13:true, seguro:true },
+    acordo:              { aviso:'metade', fgts:true, multaFGTS:0.2, ferias13:true, seguro:false },
+    obra_certa:          { aviso:false, fgts:true, multaFGTS:0.5, ferias13:true, seguro:false },
+  };
+  const r = regras[tipo];
+
+  // Verbas
+  const verbas = [];
+
+  // 1. Saldo de salário
+  const saldoSalario = salarioBase * (diasMes / diasNoMes);
+  verbas.push({ nome:'Saldo de salário', calc:`${diasMes} dias × ${fmtMoeda(salarioDia)}`, valor:saldoSalario, devida:true });
+
+  // 2. Aviso prévio
+  let valorAviso = 0;
+  let avisoDevido = false;
+  if (r.aviso === true && avisoPrevio === 'indenizado') {
+    valorAviso = valorAvisoIndenizado;
+    avisoDevido = true;
+    verbas.push({ nome:`Aviso prévio indenizado (${diasAviso} dias)`, calc:`${diasAviso}/30 × salário`, valor:valorAviso, devida:true });
+  } else if (r.aviso === 'metade') {
+    valorAviso = valorAvisoIndenizado / 2;
+    avisoDevido = true;
+    verbas.push({ nome:`Aviso prévio — 50% (acordo art. 484-A)`, calc:`${diasAviso}/30 × salário × 50%`, valor:valorAviso, devida:true });
+  } else if (r.aviso === false || (r.aviso === 'trabalhado' && avisoPrevio === 'dispensado')) {
+    verbas.push({ nome:'Aviso prévio', calc:'Não devido neste tipo de rescisão', valor:0, devida:false });
+  }
+
+  // 3. Férias vencidas
+  if (feriasVencidas > 0) {
+    const valorFeriasVenc = salarioBase * feriasVencidas * (4/3);
+    verbas.push({ nome:`Férias vencidas (${feriasVencidas}× + 1/3)`, calc:`${feriasVencidas} × salário × 4/3`, valor:valorFeriasVenc, devida:true });
+  }
+
+  // 4. Férias proporcionais
+  const mesesFerias = mesesProporcional + (avisoDevido ? Math.ceil(diasAviso/30) : 0);
+  const feriasProporcionais = r.ferias13 ? salarioBase * (mesesFerias / 12) * (4/3) : 0;
+  verbas.push({ nome:`Férias proporcionais + 1/3 (${mesesFerias} meses)`, calc:`${mesesFerias}/12 × salário × 4/3`, valor:feriasProporcionais, devida:r.ferias13 });
+
+  // 5. 13º proporcional
+  const meses13 = mesesProporcional + (avisoDevido ? Math.ceil(diasAviso/30) : 0);
+  const decimoTerceiro = r.ferias13 ? salarioBase * (meses13 / 12) : 0;
+  verbas.push({ nome:`13º salário proporcional (${meses13} meses)`, calc:`${meses13}/12 × salário`, valor:decimoTerceiro, devida:r.ferias13 });
+
+  // 6. Banco de horas
+  if (bancoHoras > 0) {
+    const valorBH = bancoHoras * salarioHora;
+    verbas.push({ nome:`Banco de horas (${bancoHoras}h)`, calc:`${bancoHoras}h × ${fmtMoeda(salarioHora)}/h`, valor:valorBH, devida:true });
+  }
+
+  // 7. FGTS + multa
+  if (r.fgts && saldoFGTS > 0 && r.multaFGTS > 0) {
+    const multa = saldoFGTS * r.multaFGTS;
+    verbas.push({ nome:`Multa FGTS (${(r.multaFGTS*100).toFixed(0)}% sobre saldo)`, calc:`${fmtMoeda(saldoFGTS)} × ${(r.multaFGTS*100).toFixed(0)}%`, valor:multa, devida:true });
+  } else if (!r.fgts) {
+    verbas.push({ nome:'Multa FGTS', calc:'Não devida — justa causa', valor:0, devida:false });
+  }
+
+  // Total
+  const total = verbas.filter(v=>v.devida).reduce((s,v)=>s+v.valor, 0);
+
+  // Resultado
+  const nomeTipos = {
+    sem_justa_causa_emp:'Sem justa causa', com_justa_causa:'Com justa causa',
+    pedido_demissao:'Pedido demissão', rescisao_indireta:'Rescisão indireta',
+    acordo:'Acordo mútuo', obra_certa:'Término contrato',
+  };
+
+  document.getElementById('res-titulo').textContent = `Rescisão — ${nomeTipos[tipo]}`;
+  document.getElementById('res-total').textContent = fmtMoeda(total);
+  document.getElementById('res-sub').textContent = `${anosCompletos} ano${anosCompletos!==1?'s':''} e ${mesesProporcional} mês${mesesProporcional!==1?'es':''} de serviço`;
+  document.getElementById('res-tempo').textContent = `${mesesTotal} meses`;
+  document.getElementById('res-salario').textContent = fmtMoeda(salarioBase);
+  document.getElementById('res-aviso').textContent = `${diasAviso} dias`;
+  document.getElementById('res-tipo').textContent = nomeTipos[tipo];
+
+  // Lista de verbas
+  const lista = document.getElementById('verbas-lista');
+  lista.innerHTML = '';
+  verbas.forEach(v => {
+    const div = document.createElement('div');
+    div.className = `verba-item${v.devida?' devida':' nao-devida'}`;
+    div.innerHTML = `
+      <div class="vi-info">
+        <div class="vi-nome">${v.nome} <span class="vi-tag ${v.devida?'sim':'nao'}">${v.devida?'Devido':'Não devido'}</span></div>
+        <div class="vi-calc">${v.calc}</div>
+      </div>
+      <div class="vi-valor">${v.valor > 0 ? fmtMoeda(v.valor) : '—'}</div>`;
+    lista.appendChild(div);
+  });
+
+  // Linha total
+  const divT = document.createElement('div');
+  divT.className = 'verba-item total';
+  divT.innerHTML = `<div class="vi-info"><div class="vi-nome">TOTAL A RECEBER</div></div><div class="vi-valor">${fmtMoeda(total)}</div>`;
+  lista.appendChild(divT);
+
+  document.getElementById('resultado').classList.add('visible');
+}
+
+// Init
+const hoje = new Date();
+document.getElementById('dataDemissao').value = hoje.toISOString().split('T')[0];
+document.getElementById('dataAdmissao').value = new Date(hoje.getFullYear()-2, hoje.getMonth(), hoje.getDate()).toISOString().split('T')[0];
+atualizarInfo();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const f = document.activeElement; if (f && (f.tagName==='INPUT'||f.tagName==='SELECT')) calcular(); }
+});
+</script>
+</body>
+</html>
